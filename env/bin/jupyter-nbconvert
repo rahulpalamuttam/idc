@@ -1,0 +1,6 @@
+#!/home/rahul/PyCharmProjects/iDC/env/bin/python
+
+from nbconvert.nbconvertapp import main
+
+if __name__ == '__main__':
+    main()

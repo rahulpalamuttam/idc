@@ -1,0 +1,38 @@
+    .document{
+        padding: 5px;
+        margin:  5px;
+        width: 100%;
+        clear:both;
+    }
+    .layer{
+        padding: 5px;
+        margin:  5px;
+        width: 100%;
+        clear:both;
+    }
+    .title{
+        font-weight: bold;
+    }
+    .plot_parent{
+        float:left;
+    }
+
+    th {
+        border: 1px solid #000;
+    }
+    tr td {
+        border: 1px solid #000;
+    }
+
+    tr.oddrow td {
+        border: 1px solid #F00;
+
+    }
+
+    tr:nth-child(even) {background: #CCC}
+    tr:nth-child(odd) {background: #FFF}
+
+    .icon {
+      background: none;
+      border: 0px;
+    }
