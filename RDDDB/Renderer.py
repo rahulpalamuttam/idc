@@ -1,8 +1,9 @@
 import numpy as np
-import math
+import time
 from bokeh.plotting import figure, show
 from bokeh.io import output_notebook
 import RDDDB
+import math
 
 '''
  Takes as input a range query that consists of the
@@ -12,11 +13,14 @@ import RDDDB
  TODO : Need to auto-adjust the size
 '''
 def render(xmin, xmax, ymin, ymax, numDisplayed):
+    start_time = time.time()
     (xpoints, ypoints) = RDDDB.crossfilter(xmin, xmax, ymin, ymax, numDisplayed)
     x = np.random.random(size=numDisplayed) * 100
     y = np.random.random(size=numDisplayed) * 100
-    print math.sqrt((xmax - xmin)*(ymax - ymin))/((xmax - xmin)*(ymax - ymin))
-    radii = [1] * numDisplayed
+
+    displayArea = (xmax - xmin) * (ymax - ymin)
+    radii = math.sqrt(.1 * displayArea/600)
+    print "Radii size = " + str(radii)
     colors = ["#%02x%02x%02x" % (r, g, 100) for r, g in zip(np.floor(50 + 2 * x), np.floor(30 + 2 * y))]
 
     # output to static HTML file (with CDN resources)
@@ -30,6 +34,8 @@ def render(xmin, xmax, ymin, ymax, numDisplayed):
 
     # add a circle renderer with vecorized colors and sizes
     p.circle(xpoints, ypoints, radius=radii, fill_color=colors, fill_alpha=0.6, line_color=None)
+    end_time = time.time()
+    print "Time taken to render : " + str(end_time - start_time)
     show(p)
     # show the results
 

@@ -2,10 +2,10 @@ import os
 import sys
 import random
 # Path for spark source folder
-os.environ['SPARK_HOME']="/home/rahul/spark-1.5.1"
+os.environ['SPARK_HOME']="/home/rpalamut/spark-1.5.1"
 
 # Append pyspark  to Python Path
-sys.path.append("/home/rahul/spark-1.5.1/python/")
+sys.path.append("/home/rpalamut/spark-1.5.1/python")
 
 from pyspark import SparkContext
 
@@ -29,17 +29,27 @@ currentRangeQuery = (0, 0, 0, 0)
     Otherwise the pointsCache is queries for faster results.
 '''
 def crossfilter(xmin, xmax, ymin, ymax, numDisplayed):
-    if len(pointsCache) == 0 or currentRangeQuery[0] > xmin or currentRangeQuery[1] < xmax or currentRangeQuery[2] > ymin or currentRangeQuery[3] < ymax :
-        global pointsCache
-        pointsCache = lenRDD.filter(lambda x: xmax > x[0] > xmin and ymax > x[1] > ymin).collect()
-        global currentRangeQuery
+    print "Number of points being displayed :" + str(numDisplayed)
+    global pointsCache
+    global currentRangeQuery
+    print currentRangeQuery
+    if xmin < currentRangeQuery[0] or xmax > currentRangeQuery[1] or ymin < currentRangeQuery[2] or ymax > currentRangeQuery[3]:
+        pointsCache = lenRDD.filter(lambda x: xmax > x[0] > xmin and ymax > x[1] > ymin).takeSample(False, 100000)
         currentRangeQuery = (xmin, xmax, ymin, ymax)
 
-    pairs = filter(lambda x: xmax > x[0] > xmin and ymax > x[1] > ymin, pointsCache)[0:numDisplayed]
+    filtered = filter(lambda x: xmax > x[0] > xmin and ymax > x[1] > ymin, pointsCache)[0:numDisplayed]
+
+    print "Number of found points in cache that meet bounds : " + str(len(filtered))
+    samplingAmt = numDisplayed - len(filtered)
+    if samplingAmt > 0:
+            sampled = lenRDD.filter(lambda x: xmax > x[0] > xmin and ymax > x[1] > ymin).takeSample(False, samplingAmt)
+            print "Number of sampled points in RDD : " + str(len(sampled))
+            filtered += sampled
+
 
     xpoints = []
     ypoints = []
-    for (r, g) in pairs:
+    for (r, g) in filtered:
         xpoints.append(r)
         ypoints.append(g)
 
